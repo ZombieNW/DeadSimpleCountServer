@@ -34,8 +34,7 @@ app.get('/count/:namespace/:key', (req, res) => {
   requestCounts[identifier] = (requestCounts[identifier] || 0) + 1;
   saveCounts();
 
-  //Send the count as a JSON response
-  res.json({ value: requestCounts[identifier] });
+  res.json({ value: requestCounts[identifier] }); //Return count
 });
 
 //Endpoint to get the count without increasing it
@@ -43,8 +42,7 @@ app.get('/get/:namespace/:key', (req, res) => {
   const { namespace, key } = req.params;
   const identifier = `${namespace}/${key}`;
 
-  //Get count and return it
-  res.json({ value: requestCounts[identifier] || 0 });
+  res.json({ value: requestCounts[identifier] || 0 }); //Return count
 });
 
 //Start the server

@@ -18,7 +18,8 @@ Fetching `http://url/count/namespace/key` will return a humble `{value: X}`, X b
 Fetching `http://url/get/namespace/key` will return how many times that endpoint has been requested WITHOUT increasing it by 1.
 
 ## Usage
-Clone it, change your port if needed, hey implement https if you want if I haven't yet. And just do the old
+Clone it, change your port if needed, added default.crt and default.key to /ssl/. And just do the old
+You must add the https certificate/key for it to work. Please report any issues.
 ```
 npm install
 npm run start

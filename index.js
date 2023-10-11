@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const https = require('https');
 const app = express();
 
 //Load existing counts from a JSON file (if it exists)
@@ -45,8 +46,15 @@ app.get('/get/:namespace/:key', (req, res) => {
   res.json({ value: requestCounts[identifier] || 0 }); //Return count
 });
 
-//Start the server
-const port = 80;
-app.listen(port, () => {
+// HTTPS Configuration
+const credentials = {
+  key: fs.readFileSync('ssl/default.key'),
+  cert: fs.readFileSync('ssl/default.crt')
+};
+
+// Create an HTTPS server at port 443
+const httpsServer = https.createServer(credentials, app);
+const port = 443;
+httpsServer.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

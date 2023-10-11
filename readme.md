@@ -12,6 +12,10 @@ A counting api HEAVILY enspired by [CountAPI](https://countapi.xyz/)
 ## This is stupid.
 I agree, I wanted analytics on my site that was dead easy and not intrusive or slow, so I made this.
 
+## Example
+Fetching `http://url/count/namespace/key` will return a humble `{value: X}`, X being how many times that endpoint has been requested increased by 1.
+Fetching `http://url/get/namespace/key` will return how many times that endpoint has been requested WITHOUT increasing it by 1.
+
 ## Usage
 Clone it, change your port if needed, hey implement https if you want if I haven't yet. And just do the old
 ```

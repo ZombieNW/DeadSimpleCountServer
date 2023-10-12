@@ -46,6 +46,21 @@ app.get('/get/:namespace/:key', (req, res) => {
   res.json({ value: requestCounts[identifier] || 0 }); //Return count
 });
 
+// Endpoint to get counts for all keys within a specific namespace
+app.get('/getnamespace/:namespace', (req, res) => {
+  const { namespace } = req.params;
+  const countsInNamespace = {};
+
+  for (const key in requestCounts) {
+    if (key.startsWith(namespace + '/')) {
+      const modifiedKey = key.substring(namespace.length + 1); // +1 to remove the trailing '/'
+      countsInNamespace[modifiedKey] = requestCounts[key];
+    }
+  }
+
+  res.json(countsInNamespace);
+});
+
 // HTTPS Configuration
 const credentials = {
   key: fs.readFileSync('ssl/default.key'),

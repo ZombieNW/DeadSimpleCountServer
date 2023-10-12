@@ -1,7 +1,11 @@
 const express = require('express');
 const fs = require('fs');
+const cors = require('cors');
 const https = require('https');
 const app = express();
+
+//Make it cors friendly
+app.use(cors());
 
 //Load existing counts from a JSON file (if it exists)
 const dbFilePath = 'counts.json';

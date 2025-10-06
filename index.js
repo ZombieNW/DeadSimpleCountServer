@@ -2,6 +2,8 @@ const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
 const https = require('https');
+const http = require('http');
+const path = require('path');
 const Database = require('better-sqlite3');
 
 const app = express();
@@ -46,8 +48,8 @@ app.get('/count/:namespace/:key', (req, res) => {
   const { namespace, key } = req.params;
 
   try {
-    const result = incrementAndGet(namespace, key);
-    return res.json({ value: result.value });
+    const resultValue = incrementAndGet(namespace, key);
+    return res.json({ value: resultValue });
 
   } catch (error) {
     console.error("Error in /count endpoint:", error);
@@ -60,7 +62,7 @@ app.get('/get/:namespace/:key', (req, res) => {
   const { namespace, key } = req.params;
 
   try {
-    const result = getCountStmt.get(namespace, key);
+    const result = getCountStatement.get(namespace, key);
     return res.json({ value: result ? result.value : 0 });
 
   } catch (error) {
@@ -88,24 +90,39 @@ app.get('/getnamespace/:namespace', (req, res) => {
 
 // Server Time !!!
 
-// SSL Check
-if (!fs.existsSync('ssl')) {
-  console.error('Error: ssl folder not found. Please create it and place default.key and default.crt inside it.');
-  process.exit(1);
+let server;
+const keyPath = path.join(__dirname, 'ssl', 'default.key');
+const certPath = path.join(__dirname, 'ssl', 'default.crt');
+
+const useHttps = fs.existsSync(keyPath) && fs.existsSync(certPath);
+
+if (useHttps) {
+  console.log('SSL certs found! Starting HTTPS server!');
+
+  const port = 443;
+  const credentials = {
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath)
+  };
+
+  server = https.createServer(credentials, app);
+  server.listen(port, () => {
+    console.log(`Server running on port ${port} (HTTPS)`);
+    console.log(`Database at '${dbFilePath}'`);
+  });
+  
+} else {
+  console.warn('No SSL certs found in /ssl dir');
+  console.warn('Starting HTTP server!');
+  
+  const port = 3000;
+
+  server = http.createServer(app);
+  server.listen(port, () => {
+    console.log(`Server running on port ${port} (HTTP)`);
+    console.log(`Database at '${dbFilePath}'`);
+  });
 }
-
-const credentials = {
-  key: fs.readFileSync('ssl/default.key'),
-  cert: fs.readFileSync('ssl/default.crt')
-};
-
-const port = 443;
-const httpsServer = https.createServer(credentials, app);
-
-httpsServer.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    console.log(`Database is stored in '${dbFilePath}'`);
-});
 
 // Night Time !!!
 process.on('exit', () => db.close());
